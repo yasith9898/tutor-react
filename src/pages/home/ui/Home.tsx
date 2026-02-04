@@ -11,7 +11,11 @@ import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/shared/ui/card";
 
-export const Home = () => {
+interface HomeProps {
+  title?: string; 
+}
+
+export const Home = ({ title }: HomeProps) => {
   return (
     <div className="max-w-6xl mx-auto px-6 py-12 space-y-24">
       
@@ -19,7 +23,7 @@ export const Home = () => {
       <section className="grid lg:grid-cols-2 gap-12 items-center pt-10">
         <div className="space-y-6">
           <Badge variant="outline" className="text-blue-600 border-blue-200 bg-blue-50/50">
-            Enrolling for 2026 Academic Year
+            Enrolling for 2026 Academic Year {title}
           </Badge>
           <h1 className="text-5xl font-bold tracking-tight text-slate-900 leading-[1.1]">
             Advanced Sciences & Mathematics with <span className="text-blue-600">John Doe</span>

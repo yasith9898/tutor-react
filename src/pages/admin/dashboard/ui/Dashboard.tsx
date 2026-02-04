@@ -8,12 +8,16 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 
-export const Dashboard = () => {
+interface DashboardProps {
+  title?: string; // The ? makes it optional
+}
+
+export const Dashboard = ({ title }: DashboardProps) => {
   return (
     <div className="space-y-8">
       {/* --- Header Section --- */}
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Management Overview</h1>
+        <h1 className="text-3xl font-bold tracking-tight"> {title || "Management Overview"}</h1>
         <p className="text-slate-500">Monitor your students, locations, and session performance.</p>
       </div>
 
@@ -89,7 +93,7 @@ const StatCard = ({ title, value, icon, trend }: any) => (
   </Card>
 );
 
-const SessionRow = ({ subject, location, time, students, status }: any) => (
+const SessionRow = ({ subject, location, time, status }: any) => (
   <div className="flex items-center justify-between border-b border-slate-50 pb-4 last:border-0 last:pb-0">
     <div className="space-y-1">
       <p className="text-sm font-medium leading-none">{subject}</p>
