@@ -1,0 +1,11 @@
+import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
+import { {{pascalCase name}} } from './{{pascalCase name}}';
+
+describe('{{pascalCase name}} Page', () => {
+  it('should render successfully', () => {
+    render(<{{pascalCase name}} />);
+    // Basic check to ensure the page title or container exists
+    expect(screen.getByRole('heading')).toBeDefined();
+  });
+});

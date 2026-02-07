@@ -38,7 +38,8 @@ This project is open-source and integrated with Hexnity for contributor recognit
 
 For detailed instructions on architectural layers, code standards, and Task ID requirements, please refer to the CONTRIBUTING.md file.
 
-### Pull Request Title Policy
+## Pull Request Title Policy
+
 The title of your Pull Request must be exactly the Task ID.
 
 ## License
