@@ -12,7 +12,7 @@ const model = new ChatGroq({
 });
 
 export const askGroq = async (prompt: string): Promise<AIResponse> => {
-  const response = await model.invoke(prompt);
+  const response = await (model as any).invoke(prompt);
   return {
     text: response.content as string,
   };
