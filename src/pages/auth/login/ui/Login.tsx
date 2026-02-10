@@ -1,14 +1,12 @@
 import { motion } from "framer-motion";
 import { 
-  Cpu, 
   Mail, 
   Lock, 
-  Sparkles,
 } from "lucide-react";
 
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Card, CardContent, CardHeader } from "@/shared/ui/card";
 import { Label } from "@/shared/ui/label";
 
 export const Login = () => {

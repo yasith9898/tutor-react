@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { UserPlus } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/shared/ui/card";
 import { RegisterForm } from "./RegisterForm";
 

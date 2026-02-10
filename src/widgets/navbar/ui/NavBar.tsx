@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Menu,
   X,
   ArrowUpRight,
 } from "lucide-react";
@@ -24,41 +23,6 @@ export const Navbar = () => {
     ];
 
     // INNOVATIVE OVERLAY VARIANTS
-    const overlayVariants = {
-      closed: { 
-        opacity: 0,
-        backdropFilter: "blur(0px)",
-        transition: { duration: 0.4, ease: "easeInOut" }
-      },
-      open: { 
-        opacity: 1,
-        backdropFilter: "blur(12px)",
-        transition: { duration: 0.4, ease: "easeInOut" }
-      }
-    };
-
-    const cardVariants = {
-      closed: { 
-        scale: 0.9, 
-        opacity: 0, 
-        y: 20,
-        rotateX: -10 
-      },
-      open: { 
-        scale: 1, 
-        opacity: 1, 
-        y: 0,
-        rotateX: 0,
-        transition: { 
-          type: "spring", 
-          stiffness: 300, 
-          damping: 30,
-          staggerChildren: 0.1,
-          delayChildren: 0.2
-        }
-      }
-    };
-
     const itemVariants = {
       closed: { opacity: 0, x: -10 },
       open: { opacity: 1, x: 0 }
@@ -101,7 +65,6 @@ export const Navbar = () => {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div 
-            variants={overlayVariants}
             initial="closed"
             animate="open"
             exit="closed"
@@ -109,7 +72,6 @@ export const Navbar = () => {
           >
             {/* The Floating Island */}
             <motion.div 
-              variants={cardVariants}
               className="w-full max-w-sm bg-slate-900/90 border border-white/10 rounded-[2.5rem] p-10 shadow-2xl overflow-hidden relative"
             >
               {/* Top Control */}

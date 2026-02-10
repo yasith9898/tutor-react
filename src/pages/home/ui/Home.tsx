@@ -19,17 +19,11 @@ export const Home = () => {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
+    scrolled;
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const navLinks = [
-    { name: "Solutions", href: "#" },
-    { name: "Open Source", href: "#" },
-    { name: "AI Engine", href: "#" },
-    { name: "Pricing", href: "#" },
-  ];
 
   return (
     <div className="min-h-screen bg-[#0b0f1a] text-slate-300 font-sans selection:bg-cyan-500/30 overflow-x-hidden">
