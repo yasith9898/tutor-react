@@ -7,6 +7,7 @@ import { HomePage } from "@/pages/home";
 import { DashboardPage } from "@/pages/admin/dashboard";
 import { RegisterPage } from "@/pages/auth/register";
 import { LoginPage } from "@/pages/auth/login";
+import { ThemeProvider } from "@/pages/admin/dashboard/dark-light-toggle";
 
 export const router = createBrowserRouter([
   {
@@ -24,7 +25,11 @@ export const router = createBrowserRouter([
   {
     // Admin Routes (Student Management & AI Tools)
     path: "/admin",
-    element: <AdminLayout />,
+    element: (
+      <ThemeProvider>
+        <AdminLayout />
+      </ThemeProvider>
+    ),
     children: [
       {
         index: true,
