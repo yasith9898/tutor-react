@@ -29,9 +29,9 @@ export const AdminLayout = () => {
       {/* 1. The Left Menu (Widget) */}
       <AppSidebar />
       
-      <SidebarInset className="bg-slate-50/50">
+      <SidebarInset className="bg-background">
         {/* 2. Sleek Sticky Header */}
-        <header className="flex h-14 shrink-0 items-center justify-between gap-2 border-b bg-white px-4 sticky top-0 z-10">
+        <header className="flex h-14 shrink-0 items-center justify-between gap-2 border-b bg-card px-4 sticky top-0 z-10">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
@@ -44,7 +44,7 @@ export const AdminLayout = () => {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage className="font-medium text-slate-900">
+                  <BreadcrumbPage className="font-medium text-foreground">
                     {formattedTitle}
                   </BreadcrumbPage>
                 </BreadcrumbItem>
@@ -54,7 +54,7 @@ export const AdminLayout = () => {
 
           {/* Right side of header for profile/notifications if needed later */}
           <div className="flex items-center gap-4">
-             <div className="text-xs text-slate-400 font-medium hidden sm:block">
+             <div className="text-xs text-muted-foreground font-medium hidden sm:block">
                 Academic Year 2026
              </div>
           </div>

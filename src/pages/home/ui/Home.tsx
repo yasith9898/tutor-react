@@ -13,7 +13,6 @@ import {
   Gamepad2,
   ShieldCheck,
 } from "lucide-react";
-
 export const Home = () => {
   const [isManaged, setIsManaged] = useState(true);
   const [scrolled, setScrolled] = useState(false);
@@ -46,7 +45,6 @@ export const Home = () => {
             <p className="text-slate-400 text-sm md:text-lg font-light max-w-2xl mx-auto mb-12">
               The only open-source ecosystem for Sri Lankan tutors. Build your brand, engage students with AI quizzes, and manage attendance in one place.
             </p>
-
             <div className="flex flex-col items-center gap-6 mb-20">
               <div className="bg-slate-900/80 backdrop-blur-md p-1.5 rounded-full border border-white/10 flex items-center shadow-2xl">
                 <button onClick={() => setIsManaged(false)} className={`px-6 py-2.5 rounded-full text-[10px] font-bold tracking-widest transition-all ${!isManaged ? 'bg-white text-slate-950' : 'text-slate-500'}`}>SELF HOSTED</button>
