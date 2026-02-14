@@ -17,19 +17,33 @@ export const UserProfileCard = () => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        let cancelled = false;
+
         const fetchProfile = async () => {
             try {
-                setLoading(true);
+                if (!cancelled) {
+                    setLoading(true);
+                }
                 const data = await getUserProfile();
-                setProfile(data);
+                if (!cancelled) {
+                    setProfile(data);
+                }
             } catch (err) {
-                setError(err instanceof Error ? err.message : 'Failed to load profile');
+                if (!cancelled) {
+                    setError(err instanceof Error ? err.message : 'Failed to load profile');
+                }
             } finally {
-                setLoading(false);
+                if (!cancelled) {
+                    setLoading(false);
+                }
             }
         };
 
         fetchProfile();
+
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
     if (loading) {
