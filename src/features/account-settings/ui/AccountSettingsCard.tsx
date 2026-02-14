@@ -10,19 +10,38 @@ export const AccountSettingsCard = () => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        let isCancelled = false;
+
         const fetchSettings = async () => {
             try {
                 setLoading(true);
                 const data = await getAccountSettings();
+
+                if (isCancelled) {
+                    return;
+                }
+
                 setSettings(data);
             } catch (err) {
+                if (isCancelled) {
+                    return;
+                }
+
                 setError(err instanceof Error ? err.message : 'Failed to load settings');
             } finally {
+                if (isCancelled) {
+                    return;
+                }
+
                 setLoading(false);
             }
         };
 
         fetchSettings();
+
+        return () => {
+            isCancelled = true;
+        };
     }, []);
 
     if (loading) {
