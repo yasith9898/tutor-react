@@ -1,9 +1,12 @@
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { LoginForm } from "@/features/auth-login";
 
 export const Login = () => {
+    const navigate = useNavigate();
+
     const handleSuccess = () => {
-        console.log("Login successful!");
+        navigate("/admin");
     };
 
     return (

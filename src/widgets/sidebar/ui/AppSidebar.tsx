@@ -13,7 +13,8 @@ import {
   CircleHelp,
   LogOut
 } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { supabase } from "@/shared/api/supabase";
 import {
   Sidebar,
   SidebarContent,
@@ -45,6 +46,17 @@ const items = [
 
 export function AppSidebar() {
   const location = useLocation();
+
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      navigate("/auth/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
 
   return (
     <Sidebar variant="inset" collapsible="icon">
@@ -84,7 +96,7 @@ export function AppSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton className="text-red-500 hover:text-red-600">
+            <SidebarMenuButton onClick={handleLogout} className="text-red-500 hover:text-red-600 cursor-pointer">
               <LogOut />
               <span>Logout</span>
             </SidebarMenuButton>

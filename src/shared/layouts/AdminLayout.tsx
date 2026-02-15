@@ -1,4 +1,7 @@
-import { Outlet, useLocation, Link } from "react-router-dom";
+import { Outlet, useLocation, Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "@/shared/api/supabase";
+import type { Session, AuthChangeEvent } from "@supabase/supabase-js";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -17,18 +20,49 @@ import { AppSidebar } from "@/widgets/sidebar";
 
 export const AdminLayout = () => {
   const location = useLocation();
-  
+
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        navigate("/auth/login");
+      }
+      setLoading(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
+      if (!session) {
+        navigate("/auth/login");
+      }
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-slate-950 text-white">
+        Loading...
+      </div>
+    );
+  }
+
   // Clean path formatting
   const pathSegments = location.pathname.split("/").filter(Boolean);
-  const formattedTitle = pathSegments.length > 1 
-    ? pathSegments[1].charAt(0).toUpperCase() + pathSegments[1].slice(1) 
+  const formattedTitle = pathSegments.length > 1
+    ? pathSegments[1].charAt(0).toUpperCase() + pathSegments[1].slice(1)
     : "Overview";
 
   return (
     <SidebarProvider>
       {/* 1. The Left Menu (Widget) */}
       <AppSidebar />
-      
+
       <SidebarInset className="bg-background">
         {/* 2. Sleek Sticky Header */}
         <header className="flex h-14 shrink-0 items-center justify-between gap-2 border-b bg-card px-4 sticky top-0 z-10">
@@ -54,9 +88,9 @@ export const AdminLayout = () => {
 
           {/* Right side of header for profile/notifications if needed later */}
           <div className="flex items-center gap-4">
-             <div className="text-xs text-muted-foreground font-medium hidden sm:block">
-                Academic Year 2026
-             </div>
+            <div className="text-xs text-muted-foreground font-medium hidden sm:block">
+              Academic Year 2026
+            </div>
           </div>
         </header>
 
