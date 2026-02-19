@@ -7,7 +7,6 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import { ToggleButton } from "@/features/dark-light-toggle";
 
 interface DashboardProps {
   title?: string;
@@ -16,20 +15,14 @@ interface DashboardProps {
 export const Dashboard = ({ title }: DashboardProps) => {
   return (
     <div className="space-y-8 p-8">
-      {/* --- Header Section with Theme Toggle --- */}
-      <div className="flex items-start justify-between">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight">
-            {title || "Management Overview"}
-          </h1>
-          <p className="text-muted-foreground">
-            Monitor your students, locations, and session performance.
-          </p>
-        </div>
-        <ToggleButton
-          showLabel
-          size="default"
-        />
+      {/* --- Header Section --- */}
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">
+          {title || "Management Overview"}
+        </h1>
+        <p className="text-muted-foreground">
+          Monitor your students, locations, and session performance.
+        </p>
       </div>
 
       {/* --- Quick Stats --- */}
