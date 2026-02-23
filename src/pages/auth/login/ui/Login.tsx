@@ -1,9 +1,19 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { LoginForm } from "@/features/auth-login";
+import { supabase } from "@/shared/api/supabase";
 
 export const Login = () => {
     const navigate = useNavigate();
+
+    useEffect(() => {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                navigate("/admin");
+            }
+        });
+    }, [navigate]);
 
     const handleSuccess = () => {
         navigate("/admin");

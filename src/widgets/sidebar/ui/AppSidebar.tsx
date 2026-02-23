@@ -13,6 +13,7 @@ import {
   CircleHelp,
   LogOut
 } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/shared/api/supabase";
 import {
@@ -46,17 +47,36 @@ const items = [
 
 export function AppSidebar() {
   const location = useLocation();
-
   const navigate = useNavigate();
+  const [user, setUser] = useState<{ email?: string; user_metadata?: { full_name?: string } } | null>(null);
+
+  useEffect(() => {
+    // Get initial user
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+    });
+
+    // Listen for changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
-      navigate("/auth/login");
     } catch (error) {
-      console.error("Logout failed:", error);
+      console.error("Logout error:", error);
+    } finally {
+      // Always redirect to login to ensure the local session is cleared/ignored
+      navigate("/auth/login");
     }
   };
+
+  const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || "User";
+  const displayEmail = user?.email || "Not signed in";
 
   return (
     <Sidebar variant="inset" collapsible="icon">
@@ -64,11 +84,11 @@ export function AppSidebar() {
         <div className="flex items-center gap-3 px-1">
           <Avatar size="lg" className="size-24 mb-4 ring-4 ring-slate-50">
             <AvatarImage src="" alt="profile pic" />
-            <AvatarFallback>AJ</AvatarFallback>
+            <AvatarFallback>{displayName.substring(0, 2).toUpperCase()}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-            <span className="font-semibold text-sm">Alex Johnson</span>
-            <span className="text-xs text-slate-500">Senior Admin & Data Analyst</span>
+            <span className="font-semibold text-sm">{displayName}</span>
+            <span className="text-xs text-slate-500 truncate max-w-[150px]">{displayEmail}</span>
           </div>
         </div>
       </SidebarHeader>

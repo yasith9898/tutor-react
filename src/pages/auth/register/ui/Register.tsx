@@ -1,9 +1,24 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { RegisterForm } from "@/features/auth-register";
+import { supabase } from "@/shared/api/supabase";
 
 export const Register = () => {
-    const handleSuccess = () => {
-        console.log("Registration successful!");
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                navigate("/admin");
+            }
+        });
+    }, [navigate]);
+
+    const handleSuccess = (hasSession: boolean) => {
+        if (hasSession) {
+            navigate("/admin");
+        }
     };
 
     return (
@@ -16,9 +31,9 @@ export const Register = () => {
 
             <main className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 py-12 md:py-20">
                 <section className="flex flex-col lg:flex-row gap-12 items-center justify-between">
-                    
+
                     {/* Left Column - Content */}
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, x: -30 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.8 }}
@@ -27,14 +42,14 @@ export const Register = () => {
                         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-bold tracking-[0.2em] uppercase">
                             <span className="text-xl font-light tracking-[0.3em] text-white uppercase">
                                 {import.meta.env.VITE_APP_NAME_SUFFIX}<span className="font-bold text-cyan-500">{import.meta.env.VITE_APP_NAME_PREFIX}</span>
-                             </span>
+                            </span>
                         </div>
-                        
+
                         <h1 className="text-5xl md:text-7xl font-light tracking-tight text-white leading-[1.1]">
                             Join the <br />
                             <span className="font-extralight italic text-slate-500 underline decoration-cyan-500/30 underline-offset-8">Elite Community.</span>
                         </h1>
-                        
+
                         <p className="text-base font-light text-slate-400 leading-relaxed max-w-md mx-auto lg:mx-0">
                             Create your student profile to unlock AI-driven insights and premium tuition materials.
                         </p>
@@ -50,7 +65,7 @@ export const Register = () => {
                     </motion.div>
 
                     {/* Right Column: Balanced Form Container */}
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.8, delay: 0.2 }}

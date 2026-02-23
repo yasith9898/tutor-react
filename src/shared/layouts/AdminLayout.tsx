@@ -25,12 +25,19 @@ export const AdminLayout = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        if (!session) {
+          navigate("/auth/login");
+        }
+      })
+      .catch((err) => {
+        console.error("Auth Session Error:", err);
         navigate("/auth/login");
-      }
-      setLoading(false);
-    });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
 
     const {
       data: { subscription },

@@ -9,12 +9,17 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader } from "@/shared/ui/card";
 import { handleLogin } from "../api/handlers";
 
+import { useState } from "react";
+import { Link } from "react-router-dom";
+
 export const LoginForm = ({ onSuccess }: { onSuccess: () => void }) => {
+  const [error, setError] = useState<string | null>(null);
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
   });
 
   const onSubmit = async (data: LoginSchema) => {
+    setError(null);
     try {
       const { user } = await handleLogin(data);
       if (user) {
@@ -22,6 +27,7 @@ export const LoginForm = ({ onSuccess }: { onSuccess: () => void }) => {
       }
     } catch (e: any) {
       console.error("Login failed:", e.message);
+      setError(e.message || "Invalid email or password");
     }
   };
 
@@ -31,53 +37,57 @@ export const LoginForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
   return (
     <Card className="bg-[#111827] backdrop-blur-2xl border-white/10 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] rounded-3xl overflow-hidden">
-        <CardHeader className="pt-10 pb-6 px-8 text-center">
-            <p className="text-xs font-light text-slate-500 uppercase tracking-widest mt-2">Enter your credentials to proceed</p>
-        </CardHeader>
+      <CardHeader className="pt-10 pb-6 px-8 text-center">
+        <p className="text-xs font-light text-slate-500 uppercase tracking-widest mt-2">Enter your credentials to proceed</p>
+      </CardHeader>
 
-        <CardContent className="px-8 pb-10">
-            
-            <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
-
-              <div className="space-y-1.5">
-                <Label htmlFor="email" className={labelStyles}>Email</Label>
-                <div className="relative group">
-                  <Mail className={iconStyles} size={16} />
-                  <Input id="email" type="email" {...register("email")} placeholder="student@example.lk" className={inputStyles} />
-                </div>
-                {errors.email && <p className="text-[9px] text-red-400/70 italic ml-1">{errors.email.message}</p>}
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="password" className={labelStyles}>Password</Label>
-                <div className="relative group">
-                  <Lock className={iconStyles} size={16} />
-                  <Input id="password" type="password" {...register("password")} className={inputStyles} />
-                </div>
-                {errors.password && <p className="text-[9px] text-red-400/70 italic ml-1">{errors.password.message}</p>}
-              </div>
-
-              <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} className="pt-2">
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full h-12 bg-white text-[#0b0f1a] hover:bg-cyan-400 font-bold text-[10px] tracking-[0.2em] uppercase rounded-xl transition-all shadow-lg"
-                >
-                  {isSubmitting ? "Authenticating..." : "Access Account"}
-                </Button>
-              </motion.div>
-            </form>
-
-            <div className="pt-8 text-center border-t border-white/5 mt-4">
-                <p className="text-[11px] font-light text-slate-500 uppercase tracking-widest">
-                    Don't have an account?{" "}
-                    <a href="/auth/register" className="font-bold text-white hover:text-cyan-400 transition-colors">
-                        Register Now
-                    </a>
-                </p>
+      <CardContent className="px-8 pb-10">
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
+          {error && (
+            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-[10px] text-red-400 text-center animate-in fade-in slide-in-from-top-1">
+              {error}
             </div>
-        </CardContent>
+          )}
+
+          <div className="space-y-1.5">
+            <Label htmlFor="email" className={labelStyles}>Email</Label>
+            <div className="relative group">
+              <Mail className={iconStyles} size={16} />
+              <Input id="email" type="email" {...register("email")} placeholder="student@example.lk" className={inputStyles} />
+            </div>
+            {errors.email && <p className="text-[9px] text-red-400/70 italic ml-1">{errors.email.message}</p>}
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="password" className={labelStyles}>Password</Label>
+            <div className="relative group">
+              <Lock className={iconStyles} size={16} />
+              <Input id="password" type="password" {...register("password")} className={inputStyles} />
+            </div>
+            {errors.password && <p className="text-[9px] text-red-400/70 italic ml-1">{errors.password.message}</p>}
+          </div>
+
+          <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} className="pt-2">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full h-12 bg-white text-[#0b0f1a] hover:bg-cyan-400 font-bold text-[10px] tracking-[0.2em] uppercase rounded-xl transition-all shadow-lg"
+            >
+              {isSubmitting ? "Authenticating..." : "Access Account"}
+            </Button>
+          </motion.div>
+        </form>
+
+        <div className="pt-8 text-center border-t border-white/5 mt-4">
+          <p className="text-[11px] font-light text-slate-500 uppercase tracking-widest">
+            Don't have an account?{" "}
+            <Link to="/auth/register" className="font-bold text-white hover:text-cyan-400 transition-colors">
+              Register Now
+            </Link>
+          </p>
+        </div>
+      </CardContent>
     </Card>
-    
+
   );
 };
