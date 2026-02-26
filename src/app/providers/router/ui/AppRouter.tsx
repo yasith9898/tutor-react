@@ -4,35 +4,27 @@ import { usePostHog } from "@posthog/react";
 import { router } from "../config";
 import { supabase } from "@/shared/api/supabase";
 
-/**
- * AppRouter handles the primary routing logic and 
- * manages the integration between PostHog Session Replays and Supabase Auth.
- */
 export const AppRouter = () => {
   const posthog = usePostHog();
 
   useEffect(() => {
     if (!posthog) return;
 
-    /**
-     * Listens for authentication state changes (INITIAL_SESSION, SIGN_IN, SIGN_OUT, etc.).
-     * This ensures that session recordings are only linked once a valid user is identified.
-     */
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    // 1. Monitor Auth State Changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log(`DEBUG: Auth Event: ${event}`);
+
       if (session?.user) {
-        /**
-         * PostHog's Session ID is the unique identifier for the current replay.
-         * We retrieve it to create a lookup table in our database for admin dashboards.
-         */
+        console.log("DEBUG: User detected:", session.user.email);
+        
+        // 2. Get the PostHog Session ID
+        // Note: It might take a moment to be available
         const sessionId = posthog.get_session_id();
         
         if (sessionId) {
           syncToSupabase(session.user.id, sessionId);
         } else {
-          /**
-           * If the PostHog SDK hasn't initialized the session ID yet, we use a 
-           * callback to ensure we capture the ID as soon as it is generated.
-           */
+          // If PostHog isn't ready, wait for it
           posthog.onSessionId((id) => {
             if (id) syncToSupabase(session.user.id, id);
           });
@@ -40,33 +32,23 @@ export const AppRouter = () => {
       }
     });
 
-    /**
-     * Persists the mapping between the Supabase User and the PostHog Session.
-     * Uses 'upsert' to prevent duplicate entries while updating existing records.
-     */
     const syncToSupabase = async (userId: string, sessionId: string) => {
-      try {
-        const { error } = await supabase
-          .from('user_recordings')
-          .upsert(
-            { 
-              user_id: userId, 
-              posthog_session_id: sessionId,
-              updated_at: new Date().toISOString() 
-            },
-            { onConflict: 'user_id, posthog_session_id' }
-          );
+      console.log("DEBUG: Executing Upsert for Session:", sessionId);
+      const { error } = await supabase
+        .from('user_recordings')
+        .upsert(
+          { user_id: userId, posthog_session_id: sessionId },
+          { onConflict: 'user_id, posthog_session_id' }
+        );
 
-        if (error) {
-          // Log only the error message in production to keep console clean
-          console.error("PostHog-Supabase Sync Error:", error.message);
-        }
-      } catch (err) {
-        console.error("Unexpected sync error:", err);
+      if (error) {
+        console.error("DEBUG: Sync Error:", error.message);
+      } else {
+        console.log("DEBUG: SUCCESS! Session synced to Supabase.");
       }
     };
 
-    // Clean up the auth listener when the component unmounts
+    // Cleanup subscription on unmount
     return () => subscription.unsubscribe();
   }, [posthog]);
 
