@@ -17,6 +17,7 @@ import {
   SidebarTrigger,
 } from "@/shared/ui/sidebar";
 import { AppSidebar } from "@/widgets/sidebar";
+import { ToggleButton } from "@/features/dark-light-toggle";
 
 export const AdminLayout = () => {
   const location = useLocation();
@@ -91,6 +92,7 @@ export const AdminLayout = () => {
             <div className="text-xs text-muted-foreground font-medium hidden sm:block">
               Academic Year 2026
             </div>
+            <ToggleButton size="sm" />
           </div>
         </header>
 
