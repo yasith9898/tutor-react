@@ -4,70 +4,70 @@ import { usePostHog } from "@posthog/react";
 import { router } from "../config";
 import { supabase } from "@/shared/api/supabase";
 
+/**
+ * AppRouter handles the primary routing logic and 
+ * manages the integration between PostHog Session Replays and Supabase Auth.
+ */
 export const AppRouter = () => {
   const posthog = usePostHog();
 
-  // --- DEBUG 1: Component Render Check ---
-  console.log("DEBUG: AppRouter Component Rendered");
-  console.log("DEBUG: PostHog Object exists?", !!posthog);
-
   useEffect(() => {
-    // --- DEBUG 2: Effect Trigger Check ---
-    console.log("DEBUG: useEffect Hook Triggered");
+    if (!posthog) return;
 
-    if (!posthog) {
-      console.error("DEBUG: PostHog is undefined/null. Check PostHogProvider in main.tsx");
-      return;
-    }
-
-    const testSupabase = async () => {
-      console.log("DEBUG: Testing Supabase Connection...");
-      const { data, error } = await supabase.from('user_recordings').select('count').limit(1);
-      if (error) {
-        console.error("DEBUG: Supabase Connection Error:", error.message);
-      } else {
-        console.log("DEBUG: Supabase Connection SUCCESS. Table 'user_recordings' is reachable.");
-      }
-    };
-
-    const runSync = async () => {
-      try {
-        // --- DEBUG 3: Auth Check ---
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-        console.log("DEBUG: Auth User check:", user ? `User found: ${user.email}` : "No User Logged In");
-        
-        if (authError) console.error("DEBUG: Auth Error:", authError.message);
-        if (!user) return;
-
-        // --- DEBUG 4: Session ID Check ---
-        // We use a manual capture to force PostHog to start a session if it hasn't
-        posthog.capture('ping_for_session'); 
-        
+    /**
+     * Listens for authentication state changes (INITIAL_SESSION, SIGN_IN, SIGN_OUT, etc.).
+     * This ensures that session recordings are only linked once a valid user is identified.
+     */
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        /**
+         * PostHog's Session ID is the unique identifier for the current replay.
+         * We retrieve it to create a lookup table in our database for admin dashboards.
+         */
         const sessionId = posthog.get_session_id();
-        console.log("DEBUG: PostHog Session ID Value:", sessionId);
-
+        
         if (sessionId) {
-          console.log("DEBUG: Attempting DB Save for:", sessionId);
-          const { error: dbError } = await supabase
-            .from('user_recordings')
-            .upsert(
-              { user_id: user.id, posthog_session_id: sessionId },
-              { onConflict: 'user_id, posthog_session_id' }
-            );
-
-          if (dbError) {
-            console.error("DEBUG: DB Save FAILED:", dbError.message);
-          } else {
-            console.log("DEBUG: DB Save SUCCESS!");
-          }
+          syncToSupabase(session.user.id, sessionId);
+        } else {
+          /**
+           * If the PostHog SDK hasn't initialized the session ID yet, we use a 
+           * callback to ensure we capture the ID as soon as it is generated.
+           */
+          posthog.onSessionId((id) => {
+            if (id) syncToSupabase(session.user.id, id);
+          });
         }
-      } catch (e) {
-        console.error("DEBUG: Unexpected Crash in Sync Logic:", e);
+      }
+    });
+
+    /**
+     * Persists the mapping between the Supabase User and the PostHog Session.
+     * Uses 'upsert' to prevent duplicate entries while updating existing records.
+     */
+    const syncToSupabase = async (userId: string, sessionId: string) => {
+      try {
+        const { error } = await supabase
+          .from('user_recordings')
+          .upsert(
+            { 
+              user_id: userId, 
+              posthog_session_id: sessionId,
+              updated_at: new Date().toISOString() 
+            },
+            { onConflict: 'user_id, posthog_session_id' }
+          );
+
+        if (error) {
+          // Log only the error message in production to keep console clean
+          console.error("PostHog-Supabase Sync Error:", error.message);
+        }
+      } catch (err) {
+        console.error("Unexpected sync error:", err);
       }
     };
 
-    testSupabase();
-    runSync();
+    // Clean up the auth listener when the component unmounts
+    return () => subscription.unsubscribe();
   }, [posthog]);
 
   return <RouterProvider router={router} />;
