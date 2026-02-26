@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import { ToggleButton } from "@/features/dark-light-toggle";
+import { ToggleButton } from '@/features/dark-light-toggle';
 
 interface DashboardProps {
   title?: string;

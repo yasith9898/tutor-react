@@ -3,11 +3,12 @@ import { expect, test, describe } from "vitest";
 import { AccountSettingsCard } from "./AccountSettingsCard";
 
 describe("AccountSettingsCard", () => {
-    test("renders account settings sections", () => {
+    test("renders account settings sections", async () => {
         render(<AccountSettingsCard />);
 
         expect(screen.getByText("Account Settings")).toBeInTheDocument();
-        expect(screen.getByText("General")).toBeInTheDocument();
+        const generalElement = await screen.findByText("General");
+        expect(generalElement).toBeInTheDocument();
         expect(screen.getByText("Timezone")).toBeInTheDocument();
         expect(screen.getByText("Language")).toBeInTheDocument();
         expect(screen.getByText("Notifications")).toBeInTheDocument();
