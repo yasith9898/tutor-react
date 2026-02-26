@@ -19,9 +19,9 @@ export const AppRouter = () => {
           try {
             // 3. Get the current logged-in user from Supabase
             const { data: { user } } = await supabase.auth.getUser();
-            const environment = import.meta.env.VITE_APP_ENV;
+            // const environment = import.meta.env.VITE_APP_ENV;
             // Only sync if we have a user (you don't want anonymous sessions in your admin table)
-            if (user && environment === 'production') {
+            if (user) {
               console.log("Syncing PostHog session to Supabase:", sessionId);
 
               const { error } = await supabase
