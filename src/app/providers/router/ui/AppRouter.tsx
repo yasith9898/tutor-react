@@ -22,7 +22,7 @@ export const AppRouter = () => {
 
     const testSupabase = async () => {
       console.log("DEBUG: Testing Supabase Connection...");
-      const { data, error } = await supabase.from('user_recordings').select('count').limit(1);
+      const { error } = await supabase.from('user_recordings').select('count').limit(1);
       if (error) {
         console.error("DEBUG: Supabase Connection Error:", error.message);
       } else {
