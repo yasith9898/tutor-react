@@ -10,21 +10,24 @@ export const AppRouter = () => {
   useEffect(() => {
     if (!posthog) return;
 
-    // 1. Monitor Auth State Changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log(`DEBUG: Auth Event: ${event}`);
-
+    /**
+     * Subscribe to authentication state changes to ensure session IDs
+     * are linked to users as soon as they are authenticated.
+     */
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_, session) => {
       if (session?.user) {
-        console.log("DEBUG: User detected:", session.user.email);
-        
-        // 2. Get the PostHog Session ID
-        // Note: It might take a moment to be available
+        /**
+         * Attempt to retrieve the current PostHog session identifier.
+         */
         const sessionId = posthog.get_session_id();
         
         if (sessionId) {
           syncToSupabase(session.user.id, sessionId);
         } else {
-          // If PostHog isn't ready, wait for it
+          /**
+           * If the session ID is not immediately available, register a 
+           * callback to capture it once initialized by the PostHog SDK.
+           */
           posthog.onSessionId((id) => {
             if (id) syncToSupabase(session.user.id, id);
           });
@@ -32,8 +35,11 @@ export const AppRouter = () => {
       }
     });
 
+    /**
+     * Synchronizes the mapping between the authenticated user and the 
+     * current session recording ID within the Supabase database.
+     */
     const syncToSupabase = async (userId: string, sessionId: string) => {
-      console.log("DEBUG: Executing Upsert for Session:", sessionId);
       const { error } = await supabase
         .from('user_recordings')
         .upsert(
@@ -42,13 +48,17 @@ export const AppRouter = () => {
         );
 
       if (error) {
-        console.error("DEBUG: Sync Error:", error.message);
-      } else {
-        console.log("DEBUG: SUCCESS! Session synced to Supabase.");
+        /**
+         * Log synchronization errors for monitoring and troubleshooting.
+         */
+        console.error("PostHog-Supabase Sync Error:", error.message);
       }
     };
 
-    // Cleanup subscription on unmount
+    /**
+     * Unsubscribe from the auth listener when the component unmounts 
+     * to prevent memory leaks.
+     */
     return () => subscription.unsubscribe();
   }, [posthog]);
 
