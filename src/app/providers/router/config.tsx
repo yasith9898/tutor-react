@@ -8,6 +8,11 @@ import { DashboardPage } from "@/pages/admin/dashboard";
 import { RegisterPage } from "@/pages/auth/register";
 import { LoginPage } from "@/pages/auth/login";
 import { ProfilePage } from "@/pages/admin/profile";
+import { AnalyticsPage } from "@/pages/admin/analytics";
+import { SettingsPage } from "@/pages/admin/settings";
+import { ReportsPage } from "@/pages/admin/reports";
+import { HelpPage } from "@/pages/admin/help";
+import { NotFoundPage } from "@/pages/error/not-found";
 import { ThemeProvider } from "@/features/dark-light-toggle";
 
 export const router = createBrowserRouter([
@@ -37,8 +42,24 @@ export const router = createBrowserRouter([
         element: <DashboardPage title="Dashboard" />,
       },
       {
+        path: "analytics",
+        element: <AnalyticsPage />,
+      },
+      {
         path: "profile",
         element: <ProfilePage />,
+      },
+      {
+        path: "settings",
+        element: <SettingsPage />,
+      },
+      {
+        path: "reports",
+        element: <ReportsPage />,
+      },
+      {
+        path: "help",
+        element: <HelpPage />,
       }
     ],
   },
@@ -54,5 +75,9 @@ export const router = createBrowserRouter([
         element: <LoginPage />,
       }
     ]
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />,
   }
 ]);
